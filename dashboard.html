@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire</title>
+</head>
+<body>
+    <div id="question1" style="display: block;">
+        <h2>Question 1</h2>
+        <input type="text" id="answer1">
+        <button onclick="nextQuestion('question1', 'question2')">Next</button>
+    </div>
+
+    <div id="question2" style="display: none;">
+        <h2>Question 2</h2>
+        <input type="text" id="answer2">
+        <button onclick="nextQuestion('question2', 'question3')">Next</button>
+    </div>
+
+    <div id="question3" style="display: none;">
+        <h2>Question 3</h2>
+        <input type="text" id="answer3">
+        <button onclick="nextQuestion('question3', 'summary')">Complete form</button>
+    </div>
+
+    <div id="summary" style="display: none;">
+        <h2>Summary</h2>
+        <p>Answers:</p>
+        <ul id="answersList"></ul>
+        <button onclick="proposal()">Last uestion...</button>
+
+    </div>
+
+    <script src="index.js"></script>
+    <script>
+        function proposal(){
+            window.location.href='proposal.html'
+        }
+
+
+        function nextQuestion(currentQuestionId, nextQuestionId) {
+            let currentQuestion = document.getElementById(currentQuestionId);
+            let nextQuestion = document.getElementById(nextQuestionId);
+            currentQuestion.style.display = 'none';
+            nextQuestion.style.display = 'block';
+
+            if (nextQuestionId === 'summary') {
+                showSummary();
+            }
+        }
+
+        function showSummary() {
+            let answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+
+            let answer1 = document.getElementById('answer1').value;
+            let answer2 = document.getElementById('answer2').value;
+            let answer3 = document.getElementById('answer3').value;
+
+            let answers = [answer1, answer2, answer3];
+
+            answers.forEach((answer, index) => {
+                let li = document.createElement('li');
+                li.textContent = `Question ${index + 1}: ${answer}`;
+                answersList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
