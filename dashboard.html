@@ -6,65 +6,31 @@
     <title>Questionnaire</title>
 </head>
 <body>
-    <div id="question1" style="display: block;">
-        <h2>Question 1</h2>
-        <input type="text" id="answer1">
-        <button onclick="nextQuestion('question1', 'question2')">Next</button>
-    </div>
-
-    <div id="question2" style="display: none;">
-        <h2>Question 2</h2>
-        <input type="text" id="answer2">
-        <button onclick="nextQuestion('question2', 'question3')">Next</button>
-    </div>
-
-    <div id="question3" style="display: none;">
-        <h2>Question 3</h2>
-        <input type="text" id="answer3">
-        <button onclick="nextQuestion('question3', 'summary')">Complete form</button>
-    </div>
-
-    <div id="summary" style="display: none;">
+    <div id="makeQuestions">
         <h2>Summary</h2>
         <p>Answers:</p>
         <ul id="answersList"></ul>
-        <button onclick="proposal()">Last uestion...</button>
-
+        <button onclick="proposal()">Save quiz</button>
     </div>
-
-    <script src="index.js"></script>
+  
     <script>
-        function proposal(){
-            window.location.href='proposal.html'
+        const answersList = document.getElementById('answersList');
+        for (let i = 1; i <= 5; i++) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <label for="question${i}">Question ${i}</label>
+                <select id="question${i}">
+                    <option value="">Select an answer</option>
+                    <option value="answer1">Answer 1</option>
+                    <option value="answer2">Answer 2</option>
+                    <option value="answer3">Answer 3</option>
+                </select>
+            `;
+            answersList.appendChild(li);
         }
 
-
-        function nextQuestion(currentQuestionId, nextQuestionId) {
-            let currentQuestion = document.getElementById(currentQuestionId);
-            let nextQuestion = document.getElementById(nextQuestionId);
-            currentQuestion.style.display = 'none';
-            nextQuestion.style.display = 'block';
-
-            if (nextQuestionId === 'summary') {
-                showSummary();
-            }
-        }
-
-        function showSummary() {
-            let answersList = document.getElementById('answersList');
-            answersList.innerHTML = '';
-
-            let answer1 = document.getElementById('answer1').value;
-            let answer2 = document.getElementById('answer2').value;
-            let answer3 = document.getElementById('answer3').value;
-
-            let answers = [answer1, answer2, answer3];
-
-            answers.forEach((answer, index) => {
-                let li = document.createElement('li');
-                li.textContent = `Question ${index + 1}: ${answer}`;
-                answersList.appendChild(li);
-            });
+        function proposal() {
+            window.location.href = 'proposal.html';
         }
     </script>
 </body>
