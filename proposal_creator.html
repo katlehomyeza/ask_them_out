@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Proposal</title>
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Create a Proposal</h1>
+        <input type="text" id="recipientName" placeholder="Recipient's Name">
+        <ul id="questionsList"></ul>
+        <input type="text" id="proposal_phrase" placeholder="Phrase the qustion in your own way">
+        <button id="saveProposal">Save Proposal</button>
+    </div>
+
+    <div id="myPopup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <h2>Congratulations!</h2>
+            <button id="email">Email</button>
+            <button id="wa">WhatsApp</button>
+            <button id="copylink">Copy Link</button>
+        </div>
+    </div>
+
+    <script>
+        const questionsList = document.getElementById('questionsList');
+        for (let i = 1; i <= 5; i++) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <label for="question${i}">Question ${i}</label>
+                <select id="question${i}">
+                    <option value="">Select an answer</option>
+                    <option value="answer1">Q 1</option>
+                    <option value="answer2">Q 2</option>
+                    <option value="answer3">Q 3</option>
+                </select>
+                <input type="text" id="answer${i}" placeholder="Enter your answer">
+
+            `;
+            questionsList.appendChild(li);
+        }
+
+        const popup = document.getElementById("myPopup");
+        const btn = document.getElementById("saveProposal");
+        const span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            const porposal_phrase = document.getElementById('proposal_phrase').value.trim();
+            const recipientName = document.getElementById('recipientName').value.trim();
+            const questions = {};
+            for (let i = 1; i <= 5; i++) {
+                const question = document.getElementById(`question${i}`).value.trim();
+                const answer = document.getElementById(`answer${i}`).value;
+                if (question && answer) {
+                    questions[question] = answer;
+                }
+            }
+
+            const proposal = {
+                recipientName: recipientName,
+                questions: questions,
+                accepter: false,
+                url:link,
+                popopsal_phrase:porposal_phrase
+            };
+
+            // Send proposal to the server
+            fetch('http://localhost:3000/saveProposal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(proposal)
+            }).then(response => {
+                if (response.ok) {
+                    popup.style.display = "block";
+                    
+                } else {
+                    alert("Failed to save proposal.");
+                }
+            }).catch(err => {
+                console.error('Error:', err);
+            });
+
+        }
+
+        span.onclick = function() {
+            popup.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == popup) {
+                popup.style.display = "none";
+            }
+        }
+
+        const link = "http://localhost:3000/api/proposal/";
+
+        document.getElementById("wa").addEventListener('click', () => {
+            const recipient = document.getElementById("recipientContact").value.trim();
+            if (recipient) {
+                window.open(`https://wa.me/${recipient}?text=${encodeURIComponent(link)}`);
+            } else {
+                alert("Please enter a recipient's WhatsApp number.");
+            }
+        });
+
+        document.getElementById("email").addEventListener('click', () => {
+            const recipient = document.getElementById("recipientContact").value.trim();
+            if (recipient) {
+                window.location.href = `mailto:${recipient}?subject=Congratulations&body=${encodeURIComponent(link)}`;
+            } else {
+                alert("Please enter a recipient's email address.");
+            }
+        });
+
+        document.getElementById("copylink").addEventListener('click', () => {
+            navigator.clipboard.writeText(link).then(() => {
+                alert("Link copied to clipboard and saved to the dashboard!");
+            }).catch(err => {
+                console.error('Failed to copy link: ', err);
+            });
+        });
+    </script>
+</body>
+</html>

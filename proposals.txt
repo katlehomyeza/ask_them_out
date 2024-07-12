@@ -1,0 +1,1 @@
+{"recipientName":"dcc","questions":{"answer1":"o","answer2":"k","answer3":" s"},"accepter":false,"url":"http://localhost:3000/api/proposal/","popopsal_phrase":"yes?","id":"1720778697102"}

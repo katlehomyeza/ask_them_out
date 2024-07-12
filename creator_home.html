@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposals</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .proposalDiv {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .proposalDiv span {
+            font-weight: bold;
+        }
+        .proposalDiv button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Proposals</h1>
+    <ul id="proposalsList"></ul>
+    <button onclick="create_proposal()">Sweep someone else off their feet</button>
+
+    <script>
+        function create_proposal(){
+            window.location.href='proposal_creator.html'
+
+        }
+
+        async function fetchProposals() {
+            try {
+                const response = await fetch('http://localhost:3000/getProposals');
+                const proposals = await response.json();
+                displayProposals(proposals);
+            } catch (error) {
+                console.error('Error fetching proposals:', error);
+            }
+        }
+
+        function displayProposals(proposals) {
+            const proposalsList = document.getElementById('proposalsList');
+            proposalsList.innerHTML = '';
+
+            proposals.forEach((proposal, index) => {
+                const li = document.createElement('li');
+                const proposalDiv = document.createElement('div');
+                proposalDiv.className = 'proposalDiv';
+                
+                const recipientName = document.createElement('span');
+                recipientName.innerText = proposal.recipientName;
+                const link = proposal.url+proposal.id
+
+                const viewButton = document.createElement('button');
+                viewButton.innerText = 'View Proposal';
+                viewButton.onclick = () => viewProposal(proposal);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete Proposal';
+                deleteButton.onclick = () => deleteProposal(index);
+
+                const copyButton = document.createElement('button');
+                copyButton.innerText = 'Copy Link';
+                copyButton.onclick = () => copyLink(link);
+
+                proposalDiv.appendChild(recipientName);
+                proposalDiv.appendChild(viewButton);
+                proposalDiv.appendChild(deleteButton);
+                proposalDiv.appendChild(copyButton);
+
+                li.appendChild(proposalDiv);
+                proposalsList.appendChild(li);
+            });
+        }
+
+        function viewProposal(proposal) {
+            const questions = proposal.questions;
+            alert(`Proposal for ${proposal.recipientName}\n` +
+                  `Questions and Answers:\n` +
+                  Object.entries(questions).map(([q, a]) => `${q}: ${a}`).join('\n') + 
+                  `\nAccepted: ${proposal.accepter ? 'Yes' : 'No'}`);
+        }
+
+        async function deleteProposal(index) {
+            try {
+                const response = await fetch('http://localhost:3000/deleteProposal', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ index })
+                });
+                if (response.ok) {
+                    fetchProposals();
+                } else {
+                    console.error('Failed to delete proposal');
+                }
+            } catch (error) {
+                console.error('Error deleting proposal:', error);
+            }
+        }
+
+        function copyLink(link) {
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy link: ', err);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchProposals);
+    </script>
+</body>
+</html>

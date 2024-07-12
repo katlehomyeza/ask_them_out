@@ -6,32 +6,98 @@
     <title>Questionnaire</title>
 </head>
 <body>
-    <div id="makeQuestions">
-        <h2>Summary</h2>
-        <p>Answers:</p>
-        <ul id="answersList"></ul>
-        <button onclick="proposal()">Save quiz</button>
+    <div id="questionContainer">
+        <h2 id="questionTitle">Question 1</h2>
+        <select id="answerSelect">
+            <option value="">Select an answer</option>
+            <option value="answer1">Answer 1</option>
+            <option value="answer2">Answer 2</option>
+            <option value="answer3">Answer 3</option>
+        </select>
+        <br><br>
+        <button id="nextButton">Next</button>
     </div>
-  
+
+    <div id="summaryContainer" style="display:none;">
+        <h2>Summary</h2>
+        <ul id="answersList"></ul>
+        <p id="score"></p>
+        <button id="submitButton">Submit</button>
+    </div>
+
     <script>
-        const answersList = document.getElementById('answersList');
-        for (let i = 1; i <= 5; i++) {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <label for="question${i}">Question ${i}</label>
-                <select id="question${i}">
-                    <option value="">Select an answer</option>
-                    <option value="answer1">Answer 1</option>
-                    <option value="answer2">Answer 2</option>
-                    <option value="answer3">Answer 3</option>
-                </select>
-            `;
-            answersList.appendChild(li);
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let answers = [];
+
+        async function fetchProposal() {
+            const proposalId = window.location.pathname.split('/').pop();
+            console.log(proposalId)
+            const response = await fetch(` http://localhost:3000/api/proposal/1234567890`);
+            console.log(response)
+            if (response.ok) {
+                const proposal = await response.json();
+                questions = Object.entries(proposal.questions).map(([q, a]) => ({ question: q, answer: a }));
+                loadQuestion(currentQuestionIndex);
+            } else {
+                alert('Proposal not found!');
+            }
         }
 
-        function proposal() {
-            window.location.href = 'proposal.html';
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                showSummary();
+                return;
+            }
+            document.getElementById('questionTitle').innerText = questions[index].question;
         }
+
+        function showSummary() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('summaryContainer').style.display = 'block';
+
+            const answersList = document.getElementById('answersList');
+            let correctAnswers = 0;
+
+            answers.forEach((answer, index) => {
+                const li = document.createElement('li');
+                li.innerText = `Question ${index + 1}: ${answer}`;
+                answersList.appendChild(li);
+
+                // Check if answer is correct
+                if (answer === questions[index].answer) {
+                    correctAnswers++;
+                }
+            });
+
+            // Calculate score
+            const score = (correctAnswers / questions.length) * 100;
+            document.getElementById('score').innerText = `Score: ${score}%`;
+
+            // Determine redirection based on score
+            if (score >= 60) {
+                document.getElementById('submitButton').innerText = 'Proceed to Proposal';
+                document.getElementById('submitButton').onclick = function() {
+                    window.location.href = 'proposal.html';
+                };
+            } else {
+                document.getElementById('submitButton').innerText = 'You don\'t know the person!';
+            }
+        }
+
+        document.getElementById('nextButton').addEventListener('click', () => {
+            const answer = document.getElementById('answerSelect').value;
+            if (!answer) {
+                alert("Please select an answer!");
+                return;
+            }
+            answers.push(answer);
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
+        });
+
+        // Initial load of the first question
+        fetchProposal();
     </script>
 </body>
 </html>
