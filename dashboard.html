@@ -4,40 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Questionnaire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e75480; /* Dark pink background */
+            transition: background-color 0.3s ease; /* Added transition for smooth background change */
+        }
+
+        #questionContainer, #finalQuestionContainer {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 80%;
+            max-width: 800px; /* Increased max-width for larger container */
+            margin-bottom: 20px; /* Added margin bottom for spacing */
+            transition: width 0.3s ease; /* Added transition for smooth width change */
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333; /* Darkened heading color */
+        }
+
+        input[type="text"] {
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            height: 40px;
+            width: 100%; /* Full width input */
+            padding: 7px 10px;
+            box-sizing: border-box; /* Ensures padding is included in width */
+            transition: border-color 0.3s ease;
+            margin-bottom: 10px; /* Added margin bottom for spacing */
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #007bff; /* Focus color */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            padding: 12px 30px; /* Increased padding for button */
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s; /* Added transition for smooth background and transform change */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #summaryContainer {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 80%;
+            max-width: 800px; /* Increased max-width for larger container */
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px; /* Added margin bottom for spacing */
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #score {
+            font-weight: bold;
+            margin-bottom: 20px; /* Added margin bottom for spacing */
+        }
+
+        #finalQuestionContainer {
+            display: none;
+            max-width: 90%; /* Increased max-width for larger final question container */
+        }
+    </style>
 </head>
 <body>
     <div id="questionContainer">
         <h2 id="questionTitle">Question 1</h2>
-        <select id="answerSelect">
-            <option value="">Select an answer</option>
-            <option value="answer1">Answer 1</option>
-            <option value="answer2">Answer 2</option>
-            <option value="answer3">Answer 3</option>
-        </select>
+        <input id="answerSelect" type="text" placeholder="Write your answer here">
         <br><br>
         <button id="nextButton">Next</button>
     </div>
 
-    <div id="summaryContainer" style="display:none;">
+    <div id="summaryContainer">
         <h2>Summary</h2>
-        <ul id="answersList"></ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>Your Answer</th>
+                </tr>
+            </thead>
+            <tbody id="answersList"></tbody>
+        </table>
         <p id="score"></p>
         <button id="submitButton">Submit</button>
+    </div>
+
+    <div id="finalQuestionContainer">
+        <h2 id="proposalPhrase">Will you marry me?</h2>
+        <button id="yesButton">Yes</button>
+        <button id="noButton">No</button>
     </div>
 
     <script>
         let questions = [];
         let currentQuestionIndex = 0;
         let answers = [];
+        let proposalPhrase = "";
+        let proposalId = "";
 
         async function fetchProposal() {
-            const proposalId = window.location.pathname.split('/').pop();
-            console.log(proposalId)
-            const response = await fetch(` http://localhost:3000/api/proposal/1234567890`);
-            console.log(response)
+            proposalId = window.location.pathname.split('/').pop();
+            const response = await fetch(`/api/proposal/${proposalId}`);
             if (response.ok) {
                 const proposal = await response.json();
                 questions = Object.entries(proposal.questions).map(([q, a]) => ({ question: q, answer: a }));
+                proposalPhrase = proposal.popopsal_phrase; // Capture the proposal phrase
                 loadQuestion(currentQuestionIndex);
             } else {
                 alert('Proposal not found!');
@@ -49,7 +159,8 @@
                 showSummary();
                 return;
             }
-            document.getElementById('questionTitle').innerText = questions[index].question;
+            const currentQuestion = questions[index];
+            document.getElementById('questionTitle').innerText = currentQuestion.question;
         }
 
         function showSummary() {
@@ -60,9 +171,12 @@
             let correctAnswers = 0;
 
             answers.forEach((answer, index) => {
-                const li = document.createElement('li');
-                li.innerText = `Question ${index + 1}: ${answer}`;
-                answersList.appendChild(li);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>Question ${index + 1}</td>
+                    <td>${answer}</td>
+                `;
+                answersList.appendChild(tr);
 
                 // Check if answer is correct
                 if (answer === questions[index].answer) {
@@ -72,28 +186,63 @@
 
             // Calculate score
             const score = (correctAnswers / questions.length) * 100;
-            document.getElementById('score').innerText = `Score: ${score}%`;
+            document.getElementById('score').innerText = `Score: ${score.toFixed(2)}%`;
 
-            // Determine redirection based on score
+            // Determine next step based on score
             if (score >= 60) {
-                document.getElementById('submitButton').innerText = 'Proceed to Proposal';
+                document.getElementById('submitButton').innerText = 'Final Question...';
                 document.getElementById('submitButton').onclick = function() {
-                    window.location.href = 'proposal.html';
+                    showFinalQuestion();
                 };
             } else {
                 document.getElementById('submitButton').innerText = 'You don\'t know the person!';
             }
         }
 
+        function showFinalQuestion() {
+            document.body.style.backgroundColor = 'red'; // Change background to red
+            document.getElementById('summaryContainer').style.display = 'none';
+            document.getElementById('finalQuestionContainer').style.display = 'block';
+            document.getElementById('proposalPhrase').innerText = proposalPhrase;
+        }
+
         document.getElementById('nextButton').addEventListener('click', () => {
             const answer = document.getElementById('answerSelect').value;
             if (!answer) {
-                alert("Please select an answer!");
+                alert("Please provide an answer!");
                 return;
             }
             answers.push(answer);
             currentQuestionIndex++;
             loadQuestion(currentQuestionIndex);
+        });
+
+        document.getElementById('yesButton').addEventListener('click', async () => {
+            alert('Congratulations! You said Yes!');
+            // Handle the yes response here (e.g., update proposal)
+            const response = await fetch(`http://localhost:3000/api/proposal/${proposalId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ accepter: true })
+            });
+            if (response.ok) {
+                console.log('Proposal accepted.');
+            } else {
+                console.error('Failed to update proposal.');
+            }
+        });
+
+        document.getElementById('noButton').addEventListener('mouseover', (event) => {
+            const noButton = event.target;
+            const maxX = document.body.clientWidth - noButton.offsetWidth;
+            const maxY = document.body.clientHeight - noButton.offsetHeight;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            noButton.style.position = 'absolute';
+            noButton.style.left = `${randomX}px`;
+            noButton.style.top = `${randomY}px`;
         });
 
         // Initial load of the first question

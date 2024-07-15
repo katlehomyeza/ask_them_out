@@ -7,16 +7,31 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
         }
-        ul {
+        h1 {
+            margin-bottom: 20px;
+        }
+        #proposalsList {
             list-style-type: none;
             padding: 0;
+            width: 80%;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
         }
         li {
             margin: 10px 0;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #fff;
         }
         .proposalDiv {
             display: flex;
@@ -26,20 +41,60 @@
         .proposalDiv span {
             font-weight: bold;
         }
-        .proposalDiv button {
-            margin-left: 10px;
+
+        button.create-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
+        button.create-button:hover {
+            background-color: #0056b3;
+        }
+        #buttonDiv {
+            display: flex;
+            gap: 10px;
+        }
+
+        #buttonDiv button {
+            align-items: center;
+            background-color: #fee6e3;
+            border: 2px solid #111;
+            border-radius: 8px;
+            box-sizing: border-box;
+            color: #111;
+            cursor: pointer;
+            display: flex;
+            font-family: Inter, sans-serif;
+            font-size: 14px;
+            height: 40px;
+            justify-content: center;
+            line-height: 20px;
+            max-width: 100%;
+            padding: 0 15px;
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+       
+        
     </style>
 </head>
 <body>
     <h1>All Proposals</h1>
     <ul id="proposalsList"></ul>
-    <button onclick="create_proposal()">Sweep someone else off their feet</button>
+    <button class="create-button" onclick="create_proposal()">Sweep someone else off their feet</button>
 
     <script>
         function create_proposal(){
-            window.location.href='proposal_creator.html'
-
+            window.location.href='proposal_creator.html';
         }
 
         async function fetchProposals() {
@@ -60,17 +115,20 @@
                 const li = document.createElement('li');
                 const proposalDiv = document.createElement('div');
                 proposalDiv.className = 'proposalDiv';
-                
+
+                const buttonDiv = document.createElement('div');
+                buttonDiv.id = 'buttonDiv';
+
                 const recipientName = document.createElement('span');
                 recipientName.innerText = proposal.recipientName;
-                const link = proposal.url+proposal.id
+                const link = proposal.url;
 
                 const viewButton = document.createElement('button');
-                viewButton.innerText = 'View Proposal';
+                viewButton.innerText = 'View';
                 viewButton.onclick = () => viewProposal(proposal);
 
                 const deleteButton = document.createElement('button');
-                deleteButton.innerText = 'Delete Proposal';
+                deleteButton.innerText = 'Delete';
                 deleteButton.onclick = () => deleteProposal(index);
 
                 const copyButton = document.createElement('button');
@@ -78,9 +136,10 @@
                 copyButton.onclick = () => copyLink(link);
 
                 proposalDiv.appendChild(recipientName);
-                proposalDiv.appendChild(viewButton);
-                proposalDiv.appendChild(deleteButton);
-                proposalDiv.appendChild(copyButton);
+                proposalDiv.appendChild(buttonDiv);
+                buttonDiv.appendChild(viewButton);
+                buttonDiv.appendChild(deleteButton);
+                buttonDiv.appendChild(copyButton);
 
                 li.appendChild(proposalDiv);
                 proposalsList.appendChild(li);

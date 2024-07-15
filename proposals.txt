@@ -1,1 +1,2 @@
-{"recipientName":"dcc","questions":{"answer1":"o","answer2":"k","answer3":" s"},"accepter":false,"url":"http://localhost:3000/api/proposal/","popopsal_phrase":"yes?","id":"1720778697102"}
+{"recipientName":"dcc","questions":{"q1":"o","q2":"k","q3":" s"},"accepter":false,"url":"http://localhost:3000/proposal/1720778697102","popopsal_phrase":"yes?","id":"1720778697102"}
+{"recipientName":"fun","questions":{"What are my parents' names?":"thato & zanta","Where was I born?":"jhb","What is my Preferred Social Media Platform?":"ig","What is my Nickname?":"kat","What is my shoe size?":"8"},"accepter":true,"url":"http://localhost:3000/proposal/1720894574814","popopsal_phrase":"yes?","id":"1720894574814"}

@@ -13,9 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/saveProposal', (req, res) => {
     proposal=req.body
-    const proposalId = Date.now().toString(); // Simple ID generation
-    proposal.id = proposalId;
-
+    
     fs.appendFile('proposals.txt', JSON.stringify(proposal) + '\n', err => {
         if (err) {
             console.error(err);
@@ -77,7 +75,7 @@ app.get('/proposal/:proposalId', (req, res) => {
         const proposal = proposals.find(p => p.id === proposalId);
 
         if (proposal) {
-            res.sendFile(path.join(__dirname, 'public', 'quiz.html'));
+            res.sendFile(path.join(__dirname,'dashboard.html'));
         } else {
             res.status(404).send('Proposal not found');
         }
@@ -99,6 +97,37 @@ app.get('/api/proposal/:proposalId', (req, res) => {
 
         if (proposal) {
             res.status(200).json(proposal);
+        } else {
+            res.status(404).send('Proposal not found');
+        }
+    });
+});
+
+// New PATCH endpoint to update the accepter property
+app.patch('/api/proposal/:proposalId', (req, res) => {
+    const proposalId = req.params.proposalId;
+
+    fs.readFile('proposals.txt', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        const proposals = data.trim().split('\n').map(line => JSON.parse(line));
+        const proposalIndex = proposals.findIndex(p => p.id === proposalId);
+
+        if (proposalIndex !== -1) {
+            proposals[proposalIndex].accepter = req.body.accepter;
+
+            fs.writeFile('proposals.txt', proposals.map(p => JSON.stringify(p)).join('\n') + '\n', err => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('Internal Server Error');
+                } else {
+                    res.status(200).send('Proposal updated successfully');
+                }
+            });
         } else {
             res.status(404).send('Proposal not found');
         }
