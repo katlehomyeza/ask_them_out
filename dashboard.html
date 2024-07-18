@@ -103,6 +103,13 @@
             display: none;
             max-width: 90%; /* Increased max-width for larger final question container */
         }
+
+        #videoPlayer {
+            width: 100%;
+            max-width: 800px;
+            height: 450px; /* Adjust height as needed */
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +147,7 @@
         let answers = [];
         let proposalPhrase = "";
         let proposalId = "";
+        let videoUrl = "";
 
         async function fetchProposal() {
             proposalId = window.location.pathname.split('/').pop();
@@ -148,6 +156,7 @@
                 const proposal = await response.json();
                 questions = Object.entries(proposal.questions).map(([q, a]) => ({ question: q, answer: a }));
                 proposalPhrase = proposal.popopsal_phrase; // Capture the proposal phrase
+                videoUrl = proposal.celebration;
                 loadQuestion(currentQuestionIndex);
             } else {
                 alert('Proposal not found!');
@@ -200,7 +209,6 @@
         }
 
         function showFinalQuestion() {
-            document.body.style.backgroundColor = 'red'; // Change background to red
             document.getElementById('summaryContainer').style.display = 'none';
             document.getElementById('finalQuestionContainer').style.display = 'block';
             document.getElementById('proposalPhrase').innerText = proposalPhrase;
@@ -218,9 +226,7 @@
         });
 
         document.getElementById('yesButton').addEventListener('click', async () => {
-            alert('Congratulations! You said Yes!');
-            // Handle the yes response here (e.g., update proposal)
-            const response = await fetch(`http://localhost:3000/api/proposal/${proposalId}`, {
+            const response = await fetch(`/api/proposal/${proposalId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -228,11 +234,31 @@
                 body: JSON.stringify({ accepter: true })
             });
             if (response.ok) {
-                console.log('Proposal accepted.');
-            } else {
+                const videoContainer = document.getElementById('finalQuestionContainer');
+                videoContainer.innerHTML = ''; // Clear existing content
+                const iframe = document.createElement('iframe');
+                iframe.id = 'videoPlayer';
+                iframe.width = '640';
+                iframe.height = '360';
+                iframe.src = `https://www.youtube.com/embed/${getYouTubeVideoId(videoUrl)}?autoplay=1&mute=1&controls=1&rel=0&showinfo=0`;
+                iframe.frameborder = '0';
+                iframe.allowfullscreen = true;
+                iframe.addEventListener('load', () => {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+                });
+                videoContainer.appendChild(iframe);
+            }
+            else{
                 console.error('Failed to update proposal.');
+
             }
         });
+
+        function getYouTubeVideoId(url) {
+            const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
 
         document.getElementById('noButton').addEventListener('mouseover', (event) => {
             const noButton = event.target;

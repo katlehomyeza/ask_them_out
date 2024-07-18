@@ -75,14 +75,48 @@
 <body>
     <div>
         <h1>Ask your person out TODAY</h1>
-        <input type="text" placeholder="Name">
-        <input type="text" placeholder="Email">
-        <input type="text" placeholder="Password">
+        <input id="Name" type="text" placeholder="Name">
+        <input id="Email" type="text" placeholder="Email">
+        <input id="Password" type="text" placeholder="Password">
         <button id="login">Let's create!</button>
     </div>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = 'creator_home.html';
+            }
+        });
+
+
         document.getElementById("login").addEventListener('click', () => {
-            window.location.href = 'creator_home.html';
+
+            const Proposer = document.getElementById('Name').value.trim();
+            const Email = document.getElementById('Email').value.trim();
+            const Password = document.getElementById('Password').value.trim()
+
+            const user = {
+                Proposer:  Proposer,
+                Email : Email,
+                Password:Password
+            }
+
+            fetch('http://localhost:3000/addUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            }).then(response => {
+                if (response.ok) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    window.location.href = 'creator_home.html';
+                } else {
+                    alert("Failed to save proposal.");
+                }
+            }).catch(err => {
+                console.error('Error:', err);
+            });
         });
     </script>
 </body>

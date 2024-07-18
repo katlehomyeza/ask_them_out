@@ -13,6 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/saveProposal', (req, res) => {
     proposal=req.body
+    proposalId = proposal.id
     
     fs.appendFile('proposals.txt', JSON.stringify(proposal) + '\n', err => {
         if (err) {
@@ -20,6 +21,20 @@ app.post('/saveProposal', (req, res) => {
             res.status(500).send('Internal Server Error');
         } else {
             res.status(200).send(`Proposal saved successfully with ID: ${proposalId}`);
+        }
+    });
+});
+
+app.post('/addUser', (req, res) => {
+    user=req.body
+    
+    fs.appendFile('proposals.txt', JSON.stringify(user) + '\n', err => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            res.status(200).send(`Proposal saved successfully `);
+            
         }
     });
 });

@@ -112,6 +112,9 @@
         <input type="text" id="recipientName" placeholder="Recipient's Name">
         <ul id="questionsList"></ul>
         <input type="text" id="proposal_phrase" placeholder="Phrase the question in your own way">
+        <input type="text" id="youtube_video" placeholder="add a celebratory video!">
+
+
         <button id="saveProposal">Save Proposal</button>
     </div>
 
@@ -127,6 +130,10 @@
 
     <script>
         const questionsList = document.getElementById('questionsList');
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
+   
+        currentUser = currentUser.Proposer;
         const selectedQuestions = new Set(); // Track selected questions
 
         const populateSelect = () => {
@@ -182,6 +189,7 @@
         const span = document.getElementsByClassName("close")[0];
 
         btn.onclick = function() {
+            const youtube_vid = document.getElementById('youtube_video').value.trim();
             const porposal_phrase = document.getElementById('proposal_phrase').value.trim();
             const recipientName = document.getElementById('recipientName').value.trim();
             const proposalId = Date.now().toString(); // Simple ID generation
@@ -196,12 +204,14 @@
             }
 
             const proposal = {
+                sender:currentUser,
                 recipientName: recipientName,
                 questions: questions,
                 accepter: false,
                 url: link+proposalId,
                 popopsal_phrase: porposal_phrase,
-                id:proposalId
+                id:proposalId,
+                celebration:youtube_vid
             };
 
             // Send proposal to the server

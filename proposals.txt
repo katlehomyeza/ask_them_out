@@ -1,2 +1,2 @@
-{"recipientName":"dcc","questions":{"q1":"o","q2":"k","q3":" s"},"accepter":false,"url":"http://localhost:3000/proposal/1720778697102","popopsal_phrase":"yes?","id":"1720778697102"}
-{"recipientName":"fun","questions":{"What are my parents' names?":"thato & zanta","Where was I born?":"jhb","What is my Preferred Social Media Platform?":"ig","What is my Nickname?":"kat","What is my shoe size?":"8"},"accepter":true,"url":"http://localhost:3000/proposal/1720894574814","popopsal_phrase":"yes?","id":"1720894574814"}
+{"Proposer":"siya","Email":"123","Password":"s"}
+{"sender":"siya","recipientName":"ss","questions":{"What is my astrological sign?":"n","What are my parents' names?":"cd","What is my Preferred Music Genre?":"c","What is my Favorite Movie Genre?":"e","What is my Preferred Social Media Platform?":" s"},"accepter":true,"url":"http://localhost:3000/proposal/1721304465578","popopsal_phrase":"yes?","id":"1721304465578","celebration":"https://youtu.be/4R1Y3aoZ9uo"}

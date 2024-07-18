@@ -14,24 +14,37 @@
             height: 100vh;
             margin: 0;
             background-color: #f4f4f4;
+            padding: 20px;
+            box-sizing: border-box;
         }
         h1 {
             margin-bottom: 20px;
         }
-        #proposalsList {
-            list-style-type: none;
-            padding: 0;
-            width: 80%;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
+        h2 {
+            margin-top: 20px;
         }
-        li {
-            margin: 10px 0;
-            padding: 10px;
+        .proposal-container {
+            width: 80%;
+            max-width: 800px;
+            height: 200px;
+            margin-bottom: 20px;
+            overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #fff;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+            margin: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        li:last-child {
+            border-bottom: none;
         }
         .proposalDiv {
             display: flex;
@@ -41,7 +54,6 @@
         .proposalDiv span {
             font-weight: bold;
         }
-
         button.create-button {
             padding: 10px 20px;
             font-size: 16px;
@@ -51,6 +63,7 @@
             color: #fff;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-top: 20px;
         }
         button.create-button:hover {
             background-color: #0056b3;
@@ -59,7 +72,6 @@
             display: flex;
             gap: 10px;
         }
-
         #buttonDiv button {
             align-items: center;
             background-color: #fee6e3;
@@ -83,33 +95,60 @@
             -webkit-user-select: none;
             touch-action: manipulation;
         }
-       
-        
     </style>
 </head>
 <body>
     <h1>All Proposals</h1>
-    <ul id="proposalsList"></ul>
+    <h2>Pending Proposals</h2>
+    <div class="proposal-container">
+        <ul id="pendingProposalsList"></ul>
+    </div>
+    <h2>Accepted Proposals</h2>
+    <div class="proposal-container">
+        
+        <ul id="acceptedProposalsList"></ul>
+    </div>
     <button class="create-button" onclick="create_proposal()">Sweep someone else off their feet</button>
 
     <script>
-        function create_proposal(){
-            window.location.href='proposal_creator.html';
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                
+                window.location.href = 'index.html';
+            }
+        });
+
+
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
+   
+        currentUser = currentUser.Proposer;
+        console.log(currentUser);
+
+        
+
+        
 
         async function fetchProposals() {
             try {
                 const response = await fetch('http://localhost:3000/getProposals');
                 const proposals = await response.json();
-                displayProposals(proposals);
+                displayProposals(proposals.filter(proposal=>proposal.sender===currentUser));
             } catch (error) {
                 console.error('Error fetching proposals:', error);
             }
         }
+        
+        function create_proposal(){
+            window.location.href='proposal_creator.html';
+        }
 
         function displayProposals(proposals) {
-            const proposalsList = document.getElementById('proposalsList');
-            proposalsList.innerHTML = '';
+            const pendingProposalsList = document.getElementById('pendingProposalsList');
+            const acceptedProposalsList = document.getElementById('acceptedProposalsList');
+            pendingProposalsList.innerHTML = '';
+            acceptedProposalsList.innerHTML = '';
 
             proposals.forEach((proposal, index) => {
                 const li = document.createElement('li');
@@ -142,7 +181,12 @@
                 buttonDiv.appendChild(copyButton);
 
                 li.appendChild(proposalDiv);
-                proposalsList.appendChild(li);
+
+                if (proposal.accepter) {
+                    acceptedProposalsList.appendChild(li);
+                } else {
+                    pendingProposalsList.appendChild(li);
+                }
             });
         }
 
