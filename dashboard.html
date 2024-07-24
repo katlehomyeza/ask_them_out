@@ -150,7 +150,9 @@
         let videoUrl = "";
 
         async function fetchProposal() {
-            proposalId = window.location.pathname.split('/').pop();
+            proposalId = new URLSearchParams(window.location.search).get('proposalId');
+            alert('proposalId');
+
             const response = await fetch(`https://askthemoutapi.azurewebsites.net/api/loadQuiz?proposalId=${proposalId}`);
             if (response.ok) {
                 const proposal = await response.json();
