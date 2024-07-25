@@ -150,7 +150,7 @@
         let videoUrl = "";
 
         async function fetchProposal() {
-            proposalId = "66a161b89fe9d03a91e82326";
+            proposalId = new URLSearchParams(window.location.search).get('proposalId');
             alert(proposalId);
 
             const response = await fetch(`https://askthemoutapi.azurewebsites.net/api/getProposal?proposalId=${proposalId}`);
