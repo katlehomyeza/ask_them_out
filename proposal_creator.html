@@ -134,10 +134,10 @@
 
    
         currentUser = currentUser.Proposer;
-        const selectedQuestions = new Set(); // Track selected questions
+        const selectedQuestions = new Set(); 
 
         const populateSelect = () => {
-            // Clear existing options
+            
             questionsList.innerHTML = '';
 
             for (let i = 1; i <= 5; i++) {
@@ -192,7 +192,7 @@
             const youtube_vid = document.getElementById('youtube_video').value.trim();
             const porposal_phrase = document.getElementById('proposal_phrase').value.trim();
             const recipientName = document.getElementById('recipientName').value.trim();
-            const proposalId = Date.now().toString(); // Simple ID generation
+            
 
             const questions = {};
             for (let i = 1; i <= 5; i++) {
@@ -208,14 +208,14 @@
                 recipientName: recipientName,
                 questions: questions,
                 accepter: false,
-                url: link+proposalId,
+                url: link,
                 popopsal_phrase: porposal_phrase,
-                id:proposalId,
+                
                 celebration:youtube_vid
             };
 
             // Send proposal to the server
-            fetch('http://localhost:3000/saveProposal', {
+            fetch('https://askthemoutapi.azurewebsites.net/api/makeProposal', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -242,7 +242,7 @@
             }
         };
 
-        const link = "http://localhost:3000/proposal/";
+        const link = "https://katlehomyeza.github.io/ask_them_out/dashboard.html?proposalId=";
 
         document.getElementById("wa").addEventListener('click', () => {
             const recipient = document.getElementById("recipientContact").value.trim();
