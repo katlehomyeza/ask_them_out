@@ -228,12 +228,12 @@
         });
 
         document.getElementById('yesButton').addEventListener('click', async () => {
+            console.log(proposalId
             const response = await fetch(`https://askthemoutapi.azurewebsites.net/api/acceptOffer?proposalId=${proposalId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ accepter: true })
+                }
             });
             if (response.ok) {
                 const videoContainer = document.getElementById('finalQuestionContainer');
