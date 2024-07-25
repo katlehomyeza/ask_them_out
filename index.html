@@ -90,18 +90,22 @@
 
 
         document.getElementById("login").addEventListener('click', () => {
-
             const Proposer = document.getElementById('Name').value.trim();
             const Email = document.getElementById('Email').value.trim();
-            const Password = document.getElementById('Password').value.trim()
+            const Password = document.getElementById('Password').value.trim();
 
-            const user = {
-                Proposer:  Proposer,
-                Email : Email,
-                Password:Password
+            if (!Proposer || !Email || !Password) {
+                alert("All fields are required.");
+                return;
             }
 
-            fetch('http://localhost:3000/addUser', {
+            const user = {
+                Proposer: Proposer,
+                Email: Email,
+                Password: Password
+            };
+
+            fetch('https://askthemoutapi.azurewebsites.net/api/AddProposers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -112,10 +116,11 @@
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     window.location.href = 'creator_home.html';
                 } else {
-                    alert("Failed to save proposal.");
+                    alert("Failed to create user. Please try again.");
                 }
             }).catch(err => {
                 console.error('Error:', err);
+                alert("An error occurred. Please try again.");
             });
         });
     </script>
