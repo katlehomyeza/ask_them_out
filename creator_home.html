@@ -98,7 +98,7 @@
     </style>
 </head>
 <body>
-    <h1>All Proposals</h1>
+    <h1 id="label">All Proposals</h1>
     <h2>Pending Proposals</h2>
     <div class="proposal-container">
         <ul id="pendingProposalsList"></ul>
@@ -115,6 +115,8 @@
             if (!currentUser) {
                 window.location.href = 'index.html';
             } else {
+                const proposer = currentUser.Proposer;
+                document.getElementById('label').textContent = `${proposer}'s Proposals`;
                 fetchProposals(currentUser.Proposer);
             }
         });
