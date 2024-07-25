@@ -153,7 +153,7 @@
             proposalId = new URLSearchParams(window.location.search).get('proposalId');
             alert(proposalId);
 
-            const response = await fetch(`https://askthemoutapi.azurewebsites.net/api/getProposal?proposalId=${proposalId}`);
+            const response = await fetch(`https://askthemoutapi.azurewebsites.net/api/loadquiz?proposalId=${proposalId}`);
             if (response.ok) {
                 const proposal = await response.json();
                 questions = Object.entries(proposal.questions).map(([q, a]) => ({ question: q, answer: a }));
