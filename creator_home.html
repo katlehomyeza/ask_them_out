@@ -105,7 +105,6 @@
     </div>
     <h2>Accepted Proposals</h2>
     <div class="proposal-container">
-        
         <ul id="acceptedProposalsList"></ul>
     </div>
     <button class="create-button" onclick="create_proposal()">Sweep someone else off their feet</button>
@@ -114,34 +113,30 @@
         document.addEventListener('DOMContentLoaded', () => {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) {
-                
                 window.location.href = 'index.html';
+            } else {
+                fetchProposals(currentUser.Proposer);
             }
         });
 
+        function create_proposal(){
+            window.location.href='proposal_creator.html';
+        }
 
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'))
-
-   
-        currentUser = currentUser.Proposer;
-        console.log(currentUser);
-
-        
-
-        
-
-        async function fetchProposals() {
+        async function fetchProposals(username) {
             try {
-                const response = await fetch('http://localhost:3000/getProposals');
+                const response = await fetch('https://askthemoutapi.azurewebsites.net/api/showAllProposals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: username })
+                });
                 const proposals = await response.json();
-                displayProposals(proposals.filter(proposal=>proposal.sender===currentUser));
+                displayProposals(proposals);
             } catch (error) {
                 console.error('Error fetching proposals:', error);
             }
-        }
-        
-        function create_proposal(){
-            window.location.href='proposal_creator.html';
         }
 
         function displayProposals(proposals) {
@@ -222,8 +217,6 @@
                 console.error('Failed to copy link: ', err);
             });
         }
-
-        document.addEventListener('DOMContentLoaded', fetchProposals);
     </script>
 </body>
 </html>
