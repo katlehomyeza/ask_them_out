@@ -1,2 +1,0 @@
-{"Proposer":"siya","Email":"123","Password":"s"}
-{"sender":"siya","recipientName":"ss","questions":{"What is my astrological sign?":"n","What are my parents' names?":"cd","What is my Preferred Music Genre?":"c","What is my Favorite Movie Genre?":"e","What is my Preferred Social Media Platform?":" s"},"accepter":true,"url":"http://localhost:3000/proposal/1721304465578","popopsal_phrase":"yes?","id":"1721304465578","celebration":"https://youtu.be/4R1Y3aoZ9uo"}
