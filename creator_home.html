@@ -195,7 +195,7 @@
 
         async function deleteProposal(index) {
             try {
-                const response = await fetch('http://localhost:3000/deleteProposal', {
+                const response = await fetch('https://askthemoutapi.azurewebsites.net/api/DeleteProposal?', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ index })
