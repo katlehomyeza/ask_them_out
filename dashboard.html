@@ -274,6 +274,19 @@
             noButton.style.top = `${randomY}px`;
         });
 
+        document.getElementById('noButton').addEventListener('click', (event) => {
+            const noButton = event.target;
+            const maxX = document.body.clientWidth - noButton.offsetWidth;
+            const maxY = document.body.clientHeight - noButton.offsetHeight;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            noButton.style.position = 'absolute';
+            noButton.style.left = `${randomX}px`;
+            noButton.style.top = `${randomY}px`;
+        });
+
+
+
         // Initial load of the first question
         fetchProposal();
     </script>
