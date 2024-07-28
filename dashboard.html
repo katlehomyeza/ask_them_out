@@ -12,12 +12,21 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #e75480; /* Dark pink background */
+            background-color: #5a2e86; /* Dark pink background */
             transition: background-color 0.3s ease; /* Added transition for smooth background change */
         }
 
+        #backgroundCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place canvas behind other content */
+        }
+
         #questionContainer, #finalQuestionContainer {
-            background-color: #fff;
+            background-color: #ffffff81;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -30,7 +39,7 @@
 
         h2 {
             margin-bottom: 20px;
-            color: #333; /* Darkened heading color */
+            color: #ffffffc3; /* Darkened heading color */
         }
 
         input[type="text"] {
@@ -57,7 +66,7 @@
             font-size: 16px;
             border: none;
             border-radius: 5px;
-            background-color: #007bff;
+            background-color: #5900ff;
             color: #fff;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s; /* Added transition for smooth background and transform change */
@@ -113,6 +122,8 @@
     </style>
 </head>
 <body>
+    <canvas id="backgroundCanvas"></canvas>
+
     <div id="questionContainer">
         <h2 id="questionTitle">Question 1</h2>
         <input id="answerSelect" type="text" placeholder="Write your answer here">
@@ -142,6 +153,73 @@
     </div>
 
     <script>
+
+const canvas = document.getElementById('backgroundCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Heart {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 40 + 5;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x, this.y, this.x + this.size / 4, this.y);
+                ctx.quadraticCurveTo(this.x + this.size / 2, this.y, this.x + this.size / 2, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x + this.size / 2, this.y, this.x + this.size * 3/4, this.y);
+                ctx.quadraticCurveTo(this.x + this.size, this.y, this.x + this.size, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x + this.size, this.y + this.size / 2, this.x + this.size * 3/4, this.y + this.size * 3/4);
+                ctx.lineTo(this.x + this.size / 2, this.y + this.size);
+                ctx.lineTo(this.x + this.size / 4, this.y + this.size * 3/4);
+                ctx.quadraticCurveTo(this.x, this.y + this.size / 2, this.x, this.y + this.size / 4);
+                ctx.fillStyle = 'maroon';
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.speedX = -this.speedX;
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.speedY = -this.speedY;
+                }
+
+                this.draw();
+            }
+        }
+
+        const heartsArray = [];
+        for (let i = 0; i < 20; i++) {
+            heartsArray.push(new Heart());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            heartsArray.forEach(heart => heart.update());
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            heartsArray.length = 0;
+            for (let i = 0; i < 50; i++) {
+                heartsArray.push(new Heart());
+            }
+        });
         let questions = [];
         let currentQuestionIndex = 0;
         let answers = [];
