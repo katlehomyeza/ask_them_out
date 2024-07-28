@@ -15,19 +15,20 @@
             font-family: Arial, sans-serif;
         }
 
-        div {
+        .container {
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            width: calc(100% - 120px);
         }
 
         h1 {
             margin-bottom: 20px;
             font-size: 24px;
             color: #333;
-            font-family:cursive
+            font-family: cursive;
         }
 
         input {
@@ -70,15 +71,52 @@
             background-color: #000;
             color: #fff;
         }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 10px;
+            font-size: 16px;
+            color: #000;
+        }
+
+        .tab.active {
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <div>
+    <div class="container">
         <h1>Ask your person out TODAY</h1>
-        <input id="Name" type="text" placeholder="Name">
-        <input id="Email" type="text" placeholder="Email">
-        <input id="Password" type="text" placeholder="Password">
-        <button id="login">Let's create!</button>
+        <div class="tabs">
+            <div id="signUpTab" class="tab active">Sign Up</div>
+            <div id="loginTab" class="tab">Log In</div>
+        </div>
+        <div id="signUpForm" class="form-container active">
+            <input id="signUpName" type="text" placeholder="Name">
+            <input id="signUpEmail" type="text" placeholder="Email">
+            <input id="signUpPassword" type="password" placeholder="Password">
+            <button id="signUpButton">Sign Up</button>
+        </div>
+        <div id="loginForm" class="form-container">
+            <input id="loginEmail" type="text" placeholder="Email">
+            <input id="loginPassword" type="password" placeholder="Password">
+            <button id="loginButton">Log In</button>
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -86,41 +124,82 @@
             if (currentUser) {
                 window.location.href = 'creator_home.html';
             }
-        });
 
+            document.getElementById('signUpTab').addEventListener('click', () => {
+                document.getElementById('signUpForm').classList.add('active');
+                document.getElementById('loginForm').classList.remove('active');
+                document.getElementById('signUpTab').classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+            });
 
-        document.getElementById("login").addEventListener('click', () => {
-            const Proposer = document.getElementById('Name').value.trim();
-            const Email = document.getElementById('Email').value.trim();
-            const Password = document.getElementById('Password').value.trim();
+            document.getElementById('loginTab').addEventListener('click', () => {
+                document.getElementById('signUpForm').classList.remove('active');
+                document.getElementById('loginForm').classList.add('active');
+                document.getElementById('signUpTab').classList.remove('active');
+                document.getElementById('loginTab').classList.add('active');
+            });
 
-            if (!Proposer || !Email || !Password) {
-                alert("All fields are required.");
-                return;
-            }
+            document.getElementById('signUpButton').addEventListener('click', () => {
+                const Proposer = document.getElementById('signUpName').value.trim();
+                const Email = document.getElementById('signUpEmail').value.trim();
+                const Password = document.getElementById('signUpPassword').value.trim();
 
-            const user = {
-                Proposer: Proposer,
-                Email: Email,
-                Password: Password
-            };
-
-            fetch('https://askthemoutapi.azurewebsites.net/api/AddProposers', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-            }).then(response => {
-                if (response.ok) {
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-                    window.location.href = 'creator_home.html';
-                } else {
-                    alert("Failed to create user. Please try again.");
+                if (!Proposer || !Email || !Password) {
+                    alert("All fields are required.");
+                    return;
                 }
-            }).catch(err => {
-                console.error('Error:', err);
-                alert("An error occurred. Please try again.");
+
+                const user = {
+                    Proposer: Proposer,
+                    Email: Email,
+                    Password: Password
+                };
+
+                fetch('https://askthemoutapi.azurewebsites.net/api/AddProposers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(user)
+                }).then(response => {
+                    if (response.ok) {
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        window.location.href = 'creator_home.html';
+                    } else {
+                        alert("Failed to create user. Please try again.");
+                    }
+                }).catch(err => {
+                    console.error('Error:', err);
+                    alert("An error occurred. Please try again.");
+                });
+            });
+
+            document.getElementById('loginButton').addEventListener('click', () => {
+                const Email = document.getElementById('loginEmail').value.trim();
+                const Password = document.getElementById('loginPassword').value.trim();
+
+                if (!Email || !Password) {
+                    alert("All fields are required.");
+                    return;
+                }
+
+                fetch('https://askthemoutapi.azurewebsites.net/api/LoginProposer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ Email:Email, Password:Password })
+                }).then(response => response.json()).then(data => {
+                    if (data.success) {
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        window.location.href = 'creator_home.html';
+                    } else {
+                        alert("Failed to log in. Please check your credentials and try again.");
+                    }
+                }).catch(err => {
+                    console.error('Error:', err);
+                    alert("An error occurred. Please try again.");
+                });
             });
         });
     </script>
