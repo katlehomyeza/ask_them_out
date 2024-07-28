@@ -25,7 +25,7 @@
             z-index: -1; /* Place canvas behind other content */
         }
 
-        #questionContainer, #finalQuestionContainer {
+        #questionContainer, #finalQuestionContainer, #rulesContainer {
             background-color: #ffffff81;
             padding: 30px;
             border-radius: 10px;
@@ -119,12 +119,28 @@
             height: 450px; /* Adjust height as needed */
             margin: 20px 0;
         }
+
+        #rulesContainer {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <canvas id="backgroundCanvas"></canvas>
 
-    <div id="questionContainer">
+    <div id="rulesContainer">
+        <h2>Test of Love</h2>
+        <p>Welcome to the Test of Love! Here are the rules:</p>
+        <ul>
+            <li>Answer each question to the best of your ability.</li>
+            <li>After completing all questions, you will see a summary of your answers.</li>
+            <li>If your score is 60% or higher, you'll proceed to the final question.</li>
+            <li>If your score is below 60%, then KNOW YOUR PERSON FURTHER🫵</li>
+        </ul>
+        <button id="startTestButton">Start Test of Love</button>
+    </div>
+
+    <div id="questionContainer" style="display: none;">
         <h2 id="questionTitle">Question 1</h2>
         <input id="answerSelect" type="text" placeholder="Write your answer here">
         <br><br>
@@ -153,8 +169,7 @@
     </div>
 
     <script>
-
-const canvas = document.getElementById('backgroundCanvas');
+        const canvas = document.getElementById('backgroundCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -220,6 +235,7 @@ const canvas = document.getElementById('backgroundCanvas');
                 heartsArray.push(new Heart());
             }
         });
+
         let questions = [];
         let currentQuestionIndex = 0;
         let answers = [];
@@ -294,6 +310,12 @@ const canvas = document.getElementById('backgroundCanvas');
             document.getElementById('proposalPhrase').innerText = proposalPhrase;
         }
 
+        document.getElementById('startTestButton').addEventListener('click', () => {
+            document.getElementById('rulesContainer').style.display = 'none';
+            document.getElementById('questionContainer').style.display = 'block';
+            fetchProposal();
+        });
+
         document.getElementById('nextButton').addEventListener('click', () => {
             const answer = document.getElementById('answerSelect').value;
             if (!answer) {
@@ -301,8 +323,6 @@ const canvas = document.getElementById('backgroundCanvas');
                 return;
             }
             answers.push(answer);
-
-
             currentQuestionIndex++;
             document.getElementById('answerSelect').value = ""
             loadQuestion(currentQuestionIndex);
@@ -330,11 +350,9 @@ const canvas = document.getElementById('backgroundCanvas');
                     iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
                 });
                 videoContainer.appendChild(iframe);
-            }
-            else{
+            } else {
                 console.error('Failed to update proposal.');
                 console.log(response);
-
             }
         });
 
@@ -366,10 +384,8 @@ const canvas = document.getElementById('backgroundCanvas');
             noButton.style.top = `${randomY}px`;
         });
 
-
-
         // Initial load of the first question
-        fetchProposal();
+        //fetchProposal();
     </script>
 </body>
 </html>
