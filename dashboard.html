@@ -301,7 +301,10 @@ const canvas = document.getElementById('backgroundCanvas');
                 return;
             }
             answers.push(answer);
+
+
             currentQuestionIndex++;
+            document.getElementById('answerSelect').value = ""
             loadQuestion(currentQuestionIndex);
         });
 
